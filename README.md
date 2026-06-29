@@ -16,8 +16,8 @@
 
 ## Documentation
 
-- **[About the tank's models and the script](./doc/about_tank.md)**
-- **[About the tank's Components and wiring](./doc/abouut_wiring.md)**
+- **[About the tank's models and scripts](./doc/about_tank.md)**
+- **[About the tank's Components and wiring](./doc/about_wiring.md)**
 
 
 ## Installing as a service
