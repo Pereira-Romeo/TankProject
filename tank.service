@@ -1,0 +1,30 @@
+[Unit]
+Description=Tank vehicle controller (tank.py)
+# Wait for Bluetooth to be ready (needed for Xbox/PS5 controller support)
+After=network.target bluetooth.target
+Wants=bluetooth.target
+
+[Service]
+# --- adjust this path if your tank.py lives somewhere else ---
+ExecStart=/usr/bin/python3 /home/pi/tank/tank.py
+
+# Restart automatically if the script crashes (not needed for normal disconnect/reconnect
+# since tank.py handles that internally, but kept as a safety net for genuine crashes)
+Restart=always
+RestartSec=3
+
+# Run as the 'pi' user so it has access to GPIO and the Bluetooth stack.
+# Change this if your username is different.
+User=pi
+Group=pi
+
+# pygame needs to know there's no real display -- this tells it to use
+# a dummy video driver so it doesn't crash looking for a screen
+Environment=SDL_VIDEODRIVER=dummy
+Environment=SDL_AUDIODRIVER=dummy
+
+# Give the service access to GPIO and input hardware
+SupplementaryGroups=gpio input
+
+[Install]
+WantedBy=multi-user.target
