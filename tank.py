@@ -66,8 +66,8 @@ MAPPINGS = {
         "btn_right_back":    5,   # R1
         "btn_left_back":     4,   # L1
         "dpad_type":         "button",
-        "dpad_left_btn":     7,
-        "dpad_right_btn":    5,   # NOTE: will be confirmed by controller_test
+        "dpad_left_btn":     15,
+        "dpad_right_btn":    16,   # NOTE: will be confirmed by controller_test
     },
     "ps4": {
         "trig_right":        5,   # R2 axis
