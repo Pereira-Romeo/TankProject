@@ -45,7 +45,8 @@ NAME_HINTS = {
     "xbox": ["xbox", "x-box", "xinput", "microsoft"],
 }
 
-DEVICE_LINE_RE = re.compile(r"\[NEW\] Device ([0-9A-Fa-f:]{17}) (.+)")
+DEVICE_NEW_RE = re.compile(r"\[NEW\] Device ([0-9A-Fa-f:]{17}) (.+)")
+DEVICE_CHG_NAME_RE = re.compile(r"\[CHG\] Device ([0-9A-Fa-f:]{17}) Name: (.+)")
 
 TIMEOUT_SECONDS = 60
 
@@ -109,21 +110,29 @@ def main():
     found_name = None
     start = time.time()
 
+    print("(Showing every device seen, for debugging -- matches will be marked with >>> )\n")
+
     try:
         while time.time() - start < TIMEOUT_SECONDS:
             line = proc.stdout.readline()
             if not line:
                 continue
+            line = line.strip()
+            if not line:
+                continue
 
-            match = DEVICE_LINE_RE.search(line)
+            # Print raw bluetoothctl output so you can see exactly what it reports,
+            # which is the best way to diagnose name/format mismatches.
+            print(f"  raw: {line}")
+
+            match = DEVICE_NEW_RE.search(line) or DEVICE_CHG_NAME_RE.search(line)
             if match:
                 mac, name = match.group(1), match.group(2).strip()
                 if matches(name, controller_type):
+                    print(f"  >>> MATCH: {name} -- {mac}")
                     found_mac = mac
                     found_name = name
                     break
-                else:
-                    print(f"  (seen: {name} -- {mac}, not a match)")
 
     except KeyboardInterrupt:
         print("\nStopped by user.")
