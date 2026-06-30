@@ -3,7 +3,8 @@
 Tank vehicle controller — Raspberry Pi 4 + L298N motor driver.
 
 Supported controllers (auto-detected):
-    PS3  DualShock 3       USB Bluetooth or wired USB
+    PS3  DualShock 3       USB
+    PS4  DualShock 4       Bluetooth
     PS5  DualSense         Bluetooth
     Xbox One / Series X/S  Bluetooth
 
@@ -68,6 +69,14 @@ MAPPINGS = {
         "dpad_left_btn":     7,
         "dpad_right_btn":    5,   # NOTE: will be confirmed by controller_test
     },
+    "ps4": {
+        "trig_right":        5,   # R2 axis
+        "trig_left":         2,   # L2 axis
+        "btn_right_back":    5,   # R1
+        "btn_left_back":     4,   # L1
+        "dpad_type":         "hat",
+        "dpad_hat":          0,
+    },
     "ps5": {
         "trig_right":        5,   # R2 axis
         "trig_left":         4,   # L2 axis
@@ -89,6 +98,7 @@ MAPPINGS = {
 # Substrings used to detect controller type from joystick name (lowercase)
 CONTROLLER_HINTS = {
     "ps3":  ["playstation(r)3", "ps3", "sixaxis", "dualshock 3"],
+    "ps4":  ["wireless controller", "ps4", "dualshock 4"],
     "ps5":  ["dualsense", "ps5", "dualshock 5", "playstation 5"],
     "xbox": ["xbox", "x-box", "xinput", "microsoft"],
 }
@@ -165,7 +175,7 @@ def wait_for_controller():
     """Block until at least one joystick is connected, then return it."""
     printed = False
     while True:
-        pygame.joystick.quit() # re-init forces pygame to re-scan USB/BT devices
+        pygame.joystick.quit()   # re-init forces pygame to re-scan USB/BT devices
         pygame.joystick.init()
         if pygame.joystick.get_count() > 0:
             joystick = pygame.joystick.Joystick(0)
@@ -174,6 +184,7 @@ def wait_for_controller():
         if not printed:
             print("Waiting for controller...")
             print("  PS3  -> plug in via USB")
+            print("  PS4  -> pair via Bluetooth")
             print("  PS5  -> pair via Bluetooth")
             print("  Xbox -> pair via Bluetooth")
             printed = True

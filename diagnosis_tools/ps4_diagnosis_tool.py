@@ -1,30 +1,31 @@
 #!/usr/bin/env python3
 """
-PS4 DualShock 4 controller (USB or Bluetooth) diagnostic tool.
+PS4 DualShock 4 controller (Bluetooth) diagnostic tool.
 
---- Pairing the PS4 controller via Bluetooth (optional, skip if using USB) ---
+--- Pairing the PS4 controller via Bluetooth ---
 
     bluetoothctl
     power on
     agent on
     scan on
-    # Hold the PS button + Share button until the lightbar flashes fast
+    # Hold the PS button + Share button until the light bar flashes rapidly
     # When it appears in the scan list, note its MAC (e.g. AA:BB:CC:DD:EE:FF)
+    # NOTE: DualShock 4 controllers usually report as "Wireless Controller"
     pair   AA:BB:CC:DD:EE:FF
     trust  AA:BB:CC:DD:EE:FF
     connect AA:BB:CC:DD:EE:FF
     exit
 
-Once connected (USB plug-in or Bluetooth pairing above), run:
-    python3 ps4_test.py
+Once connected, run:
+    python3 ps4_diagnosis_tool.py
 
 Press R1, R2, L1, L2, and the left/right d-pad arrows. The terminal will print
 every button/axis/hat that activates. Use those numbers to verify (or correct)
 the MAPPINGS["ps4"] entry in tank.py.
 
 Expected defaults in tank.py:
-    R2          -> Axis 5     (trigger, goes from -1.0 to 1.0)
-    L2          -> Axis 4
+    R2          -> Axis 5
+    L2          -> Axis 2
     R1          -> Button 5
     L1          -> Button 4
     D-pad       -> Hat 0  (x=-1 left, x=1 right)
@@ -37,7 +38,7 @@ pygame.joystick.init()
 
 if pygame.joystick.get_count() == 0:
     print("No controller found.")
-    print("Plug the DualShock 4 in via USB, or pair it over Bluetooth (see instructions at top of this file), then try again.")
+    print("Pair the DualShock 4 over Bluetooth (see instructions at top of this file) then try again.")
     raise SystemExit
 
 js = pygame.joystick.Joystick(0)
