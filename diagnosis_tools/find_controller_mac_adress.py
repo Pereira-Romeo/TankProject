@@ -139,28 +139,52 @@ def main():
                     print(f"  >>> MATCH: {name} -- {mac}")
                     found_mac = mac
                     found_name = name
+                    # Kill bluetoothctl immediately (no polite scan-off/exit handshake)
+                    # so we can start pairing right away, before the user has to keep
+                    # holding the controller's pairing buttons any longer than necessary.
+                    proc.kill()
                     break
 
     except KeyboardInterrupt:
         print("\nStopped by user.")
+        proc.kill()
 
-    finally:
-        send("scan off")
-        time.sleep(0.3)
-        send("exit")
-        proc.terminate()
+    # Only do the polite shutdown if we DIDN'T already kill the process on a match
+    if proc.poll() is None:
         try:
+            send("scan off")
+            time.sleep(0.3)
+            send("exit")
+            proc.terminate()
             proc.wait(timeout=3)
-        except subprocess.TimeoutExpired:
+        except Exception:
             proc.kill()
 
     if found_mac:
         print(f"\nFound {controller_type.upper()} controller: {found_name}")
-        print(f"MAC address: {found_mac}\n")
-        print("To pair, trust, and connect it, run:")
-        print(f"  bluetoothctl pair {found_mac}")
-        print(f"  bluetoothctl trust {found_mac}")
-        print(f"  bluetoothctl connect {found_mac}")
+        print(f"MAC address: {found_mac}")
+        print("Pairing now, keep the controller close...\n")
+
+        def run_bt_command(cmd):
+            print(f"  $ bluetoothctl {cmd} {found_mac}")
+            result = subprocess.run(
+                ["bluetoothctl", cmd, found_mac],
+                capture_output=True, text=True, timeout=15
+            )
+            print(result.stdout.strip())
+            return result.returncode == 0
+
+        ok = run_bt_command("pair")
+        run_bt_command("trust")  # trust even if pair reported already-paired
+        ok_connect = run_bt_command("connect")
+
+        if ok_connect:
+            print(f"\n{controller_type.upper()} controller connected and trusted.")
+            print("It will auto-reconnect on future power-ons.")
+        else:
+            print("\nPair/trust succeeded but connect didn't report success.")
+            print("Try manually:")
+            print(f"  bluetoothctl connect {found_mac}")
         return
 
     # Fallback: the live capture can miss a one-off [NEW] line if it printed
@@ -178,10 +202,26 @@ def main():
             mac, name = m.group(1), m.group(2).strip()
             if matches(name, controller_type):
                 print(f"\nFound it in the device list: {name} -- {mac}")
-                print("To pair, trust, and connect it, run:")
-                print(f"  bluetoothctl pair {mac}")
-                print(f"  bluetoothctl trust {mac}")
-                print(f"  bluetoothctl connect {mac}")
+                print("Pairing now...\n")
+
+                def run_bt_command(cmd):
+                    print(f"  $ bluetoothctl {cmd} {mac}")
+                    result = subprocess.run(
+                        ["bluetoothctl", cmd, mac],
+                        capture_output=True, text=True, timeout=15
+                    )
+                    print(result.stdout.strip())
+                    return result.returncode == 0
+
+                run_bt_command("pair")
+                run_bt_command("trust")
+                ok_connect = run_bt_command("connect")
+
+                if ok_connect:
+                    print(f"\n{controller_type.upper()} controller connected and trusted.")
+                else:
+                    print("\nPair/trust succeeded but connect didn't report success.")
+                    print(f"Try manually: bluetoothctl connect {mac}")
                 return
 
     print(f"\nNo {controller_type.upper()} controller found within {TIMEOUT_SECONDS} seconds.")
