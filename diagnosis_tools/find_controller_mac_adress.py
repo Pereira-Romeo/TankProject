@@ -31,6 +31,7 @@ Requires bluetoothctl to be installed and the Bluetooth service running:
 
 import argparse
 import re
+import select
 import subprocess
 import sys
 import time
@@ -114,6 +115,11 @@ def main():
 
     try:
         while time.time() - start < TIMEOUT_SECONDS:
+            remaining = TIMEOUT_SECONDS - (time.time() - start)
+            ready, _, _ = select.select([proc.stdout], [], [], min(1.0, remaining))
+            if not ready:
+                continue  # no output available right now, loop back and re-check timeout
+
             line = proc.stdout.readline()
             if not line:
                 continue
@@ -121,9 +127,10 @@ def main():
             if not line:
                 continue
 
-            # Print raw bluetoothctl output so you can see exactly what it reports,
-            # which is the best way to diagnose name/format mismatches.
-            print(f"  raw: {line}")
+            # Print raw bluetoothctl output (with a timestamp) so you can see exactly
+            # what it reports and when, which is the best way to diagnose name/timing issues.
+            elapsed = time.time() - start
+            print(f"  [{elapsed:5.1f}s] raw: {line}")
 
             match = DEVICE_NEW_RE.search(line) or DEVICE_CHG_NAME_RE.search(line)
             if match:
@@ -154,13 +161,35 @@ def main():
         print(f"  bluetoothctl pair {found_mac}")
         print(f"  bluetoothctl trust {found_mac}")
         print(f"  bluetoothctl connect {found_mac}")
-    else:
-        print(f"\nNo {controller_type.upper()} controller found within {TIMEOUT_SECONDS} seconds.")
-        print("Make sure:")
-        print("  - the controller is in pairing mode (light flashing rapidly)")
-        print("  - Bluetooth is enabled: sudo systemctl start bluetooth")
-        print("  - you're running this with enough permissions (try with sudo if it fails)")
-        sys.exit(1)
+        return
+
+    # Fallback: the live capture can miss a one-off [NEW] line if it printed
+    # right at the very start before output was being read, or during a
+    # gap between select() calls. bluetoothctl keeps a list of everything
+    # it has seen this session, so double check that list directly.
+    print("\nLive scan didn't catch a match -- double-checking the device list...")
+    result = subprocess.run(
+        ["bluetoothctl", "devices"],
+        capture_output=True, text=True, timeout=10
+    )
+    for line in result.stdout.splitlines():
+        m = re.match(r"Device ([0-9A-Fa-f:]{17}) (.+)", line.strip())
+        if m:
+            mac, name = m.group(1), m.group(2).strip()
+            if matches(name, controller_type):
+                print(f"\nFound it in the device list: {name} -- {mac}")
+                print("To pair, trust, and connect it, run:")
+                print(f"  bluetoothctl pair {mac}")
+                print(f"  bluetoothctl trust {mac}")
+                print(f"  bluetoothctl connect {mac}")
+                return
+
+    print(f"\nNo {controller_type.upper()} controller found within {TIMEOUT_SECONDS} seconds.")
+    print("Make sure:")
+    print("  - the controller is in pairing mode (light flashing rapidly)")
+    print("  - Bluetooth is enabled: sudo systemctl start bluetooth")
+    print("  - you're running this with enough permissions (try with sudo if it fails)")
+    sys.exit(1)
 
 
 if __name__ == "__main__":
