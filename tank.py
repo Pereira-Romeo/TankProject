@@ -21,12 +21,12 @@ Turret controls (same across all controllers):
 Safety: pressing both directions of any motor at once stops that motor.
 
 GPIO pin assignment (BCM numbering):
-    RIGHT_FORWARD_PIN  = 17   ->  L298N IN1   (right motor)
-    RIGHT_BACKWARD_PIN = 27   ->  L298N IN2   (right motor)
-    LEFT_FORWARD_PIN   = 22   ->  L298N IN3   (left motor)
-    LEFT_BACKWARD_PIN  = 23   ->  L298N IN4   (left motor)
-    TURRET_LEFT_PIN    = 24   ->  L298N IN1   (turret, second L298N channel or board)
-    TURRET_RIGHT_PIN   = 25   ->  L298N IN2   (turret)
+    RIGHT_FORWARD_PIN  = 23   ->  L298N IN1   (right motor)
+    RIGHT_BACKWARD_PIN = 24   ->  L298N IN2   (right motor)
+    LEFT_FORWARD_PIN   = 27   ->  L298N IN3   (left motor)
+    LEFT_BACKWARD_PIN  = 17   ->  L298N IN4   (left motor)
+    TURRET_LEFT_PIN    = 5   ->  L298N IN1   (turret, second L298N channel or board)
+    TURRET_RIGHT_PIN   = 6   ->  L298N IN2   (turret)
 """
 
 import signal
@@ -37,12 +37,12 @@ from gpiozero import OutputDevice
 # ---------------------------------------------------------------------------
 # GPIO PIN CONFIG -- edit here if your wiring differs
 # ---------------------------------------------------------------------------
-RIGHT_FORWARD_PIN = 23
+RIGHT_FORWARD_PIN  = 23
 RIGHT_BACKWARD_PIN = 24
-LEFT_FORWARD_PIN = 27
-LEFT_BACKWARD_PIN = 17
-TURRET_LEFT_PIN = 5
-TURRET_RIGHT_PIN = 6
+LEFT_FORWARD_PIN   = 27
+LEFT_BACKWARD_PIN  = 17
+TURRET_LEFT_PIN    = 5
+TURRET_RIGHT_PIN   = 6
 
 # Triggers rest at -1.0 (released) and go up to 1.0 (fully pressed).
 # We treat anything above this threshold as "pressed".
