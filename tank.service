@@ -24,15 +24,14 @@ KillMode=control-group
 User=pi
 Group=pi
 
+# Give the service a writable working directory (lgpio writes temp files to cwd)
+WorkingDirectory=/home/pi/tank
+
 # pygame needs to know there's no real display -- this tells it to use
 # a dummy video driver so it doesn't crash looking for a screen
 Environment=SDL_VIDEODRIVER=dummy
 Environment=SDL_AUDIODRIVER=dummy
-# Tell gpiozero to use lgpio directly instead of going through the fallback chain.
-# This silences the PinFactoryFallback warnings in the logs.
-Environment=GPIOZERO_PIN_FACTORY=lgpio
-# Give lgpio a writable directory for its notification pipe.
-Environment=XDG_RUNTIME_DIR=/run/user/1000
+Environment=GPIOZERO_PIN_FACTORY=rpigpio
 
 # Give the service access to GPIO and input hardware
 SupplementaryGroups=gpio input
