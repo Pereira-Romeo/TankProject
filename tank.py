@@ -37,12 +37,12 @@ from gpiozero import OutputDevice
 # ---------------------------------------------------------------------------
 # GPIO PIN CONFIG -- edit here if your wiring differs
 # ---------------------------------------------------------------------------
-RIGHT_FORWARD_PIN = 23
-RIGHT_BACKWARD_PIN = 24
-LEFT_FORWARD_PIN = 27
-LEFT_BACKWARD_PIN = 17
-TURRET_LEFT_PIN = 5
-TURRET_RIGHT_PIN = 6
+RIGHT_FORWARD_PIN  = 17
+RIGHT_BACKWARD_PIN = 27
+LEFT_FORWARD_PIN   = 22
+LEFT_BACKWARD_PIN  = 23
+TURRET_LEFT_PIN    = 24
+TURRET_RIGHT_PIN   = 25
 
 # Triggers rest at -1.0 (released) and go up to 1.0 (fully pressed).
 # We treat anything above this threshold as "pressed".
@@ -87,10 +87,10 @@ MAPPINGS = {
         "dpad_hat":          0,
     },
     "xbox": {
-        "trig_right":        5,   # RT axis
-        "trig_left":         2,   # LT axis
-        "btn_right_back":    5,   # RB
-        "btn_left_back":     4,   # LB
+        "trig_right":        4,   # RT axis
+        "trig_left":         5,   # LT axis
+        "btn_right_back":    7,   # RB
+        "btn_left_back":     6,   # LB
         "dpad_type":         "hat",
         "dpad_hat":          0,
     },
