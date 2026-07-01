@@ -68,7 +68,8 @@ MAPPINGS = {
         "btn_left_back":     4,   # L1
         "dpad_type":         "button",
         "dpad_left_btn":     15,
-        "dpad_right_btn":    16,   # NOTE: will be confirmed by controller_test
+        "dpad_right_btn":    16,
+        "trig_threshold":    0.0,
     },
     "ps4": {
         "trig_right":        5,   # R2 axis
@@ -77,6 +78,7 @@ MAPPINGS = {
         "btn_left_back":     4,   # L1
         "dpad_type":         "hat",
         "dpad_hat":          0,
+        "trig_threshold":    0.0,
     },
     "ps5": {
         "trig_right":        5,   # R2 axis
@@ -85,6 +87,7 @@ MAPPINGS = {
         "btn_left_back":     6,   # L1
         "dpad_type":         "hat",
         "dpad_hat":          0,
+        "trig_threshold":    0.0,
     },
     "xbox": {
         "trig_right":        4,   # RT axis
@@ -93,6 +96,8 @@ MAPPINGS = {
         "btn_left_back":     6,   # LB
         "dpad_type":         "hat",
         "dpad_hat":          0,
+        # Xbox triggers rest at 0.0 when released (not -1.0 like PS controllers),
+        "trig_threshold":    0.1,
     },
 }
 
@@ -231,8 +236,9 @@ def main():
                         break  # back to wait_for_controller()
 
                     # --- drive motors ---
-                    fwd_right  = joystick.get_axis(mapping["trig_right"]) > TRIGGER_THRESHOLD
-                    fwd_left   = joystick.get_axis(mapping["trig_left"])  > TRIGGER_THRESHOLD
+                    threshold  = mapping["trig_threshold"]
+                    fwd_right  = joystick.get_axis(mapping["trig_right"]) > threshold
+                    fwd_left   = joystick.get_axis(mapping["trig_left"])  > threshold
                     bwd_right  = joystick.get_button(mapping["btn_right_back"]) == 1
                     bwd_left   = joystick.get_button(mapping["btn_left_back"])  == 1
 
