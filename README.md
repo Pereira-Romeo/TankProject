@@ -2,10 +2,23 @@
 
 #### Table of contents
 
-1. **[Project's Team](#team)**
-2. **[Additional documentation](#documentation)**
-3. **[Installing as a service](#installing-as-a-service)**
-4. **[Dependencies](#dependencies)**
+1. **[Objectif](#objectif)**
+2. **[Project's Team](#team)**
+3. **[Additional documentation](#documentation)**
+4. **[Installing as a service](#installing-as-a-service)**
+5. **[Dependencies](#dependencies)**
+
+## Objectif
+
+This project aims to design and build a 3D printed mini-tank on tracks, powered by two electric motors.
+
+It is part of a practical learning approach combining:
+
+- 3D design;
+- the on-board electronics;
+- the programming.
+
+The final objective is to obtain a functional mobile vehicle intended for demonstrations and experimentation.
 
 ## Team
 
