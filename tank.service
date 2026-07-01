@@ -13,6 +13,12 @@ ExecStart=/usr/bin/python3 /home/pi/tank/tank.py
 Restart=always
 RestartSec=3
 
+# Allow 5 seconds for graceful shutdown (motors stop, pygame quits),
+# then force-kill the entire process group if it's still hanging.
+TimeoutStopSec=5
+KillSignal=SIGTERM
+KillMode=control-group
+
 # Run as the 'pi' user so it has access to GPIO and the Bluetooth stack.
 # Change this if your username is different.
 User=pi
@@ -22,6 +28,11 @@ Group=pi
 # a dummy video driver so it doesn't crash looking for a screen
 Environment=SDL_VIDEODRIVER=dummy
 Environment=SDL_AUDIODRIVER=dummy
+# Tell gpiozero to use lgpio directly instead of going through the fallback chain.
+# This silences the PinFactoryFallback warnings in the logs.
+Environment=GPIOZERO_PIN_FACTORY=lgpio
+# Give lgpio a writable directory for its notification pipe.
+Environment=XDG_RUNTIME_DIR=/run/user/1000
 
 # Give the service access to GPIO and input hardware
 SupplementaryGroups=gpio input

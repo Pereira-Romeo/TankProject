@@ -1,9 +1,14 @@
 #!/bin/bash
 # install_service.sh
-# Installs tank.py as a systemd service that starts automatically on boot.
+# Installs OR updates tank.py as a systemd service that starts automatically on boot.
+# Safe to run multiple times -- re-running it acts as an update, picking up any
+# changes to tank.py, tank.service, or requirements.txt.
 #
-# Run this once from the folder where tank.py lives:
+# First install:
 #   chmod +x install_service.sh
+#   sudo ./install_service.sh
+#
+# To update after changing any project files:
 #   sudo ./install_service.sh
 
 set -e  # stop immediately if any command fails
@@ -20,7 +25,7 @@ RUN_AS_USER="pi"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SERVICE_FILE="${SERVICE_NAME}.service"
 
-echo "=== Tank service installer ==="
+echo "=== Tank service installer / updater ==="
 
 # 1. Check we're running as root (needed to write to /etc/systemd/system)
 if [ "$EUID" -ne 0 ]; then
@@ -87,9 +92,9 @@ systemctl daemon-reload
 echo "Enabling $SERVICE_NAME service ..."
 systemctl enable "$SERVICE_NAME"
 
-# 10. Start it right now too
-echo "Starting $SERVICE_NAME service ..."
-systemctl start "$SERVICE_NAME"
+# 10. Start or restart the service
+echo "Starting/restarting $SERVICE_NAME service ..."
+systemctl restart "$SERVICE_NAME"
 
 # 11. Show status
 echo ""
