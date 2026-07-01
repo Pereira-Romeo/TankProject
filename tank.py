@@ -21,10 +21,10 @@ Turret controls (same across all controllers):
 Safety: pressing both directions of any motor at once stops that motor.
 
 GPIO pin assignment (BCM numbering):
-    RIGHT_FORWARD_PIN  = 23   ->  L298N IN1   (right motor)
-    RIGHT_BACKWARD_PIN = 24   ->  L298N IN2   (right motor)
-    LEFT_FORWARD_PIN   = 27   ->  L298N IN3   (left motor)
-    LEFT_BACKWARD_PIN  = 17   ->  L298N IN4   (left motor)
+    RIGHT_FORWARD_PIN  = 17   ->  L298N IN1   (right motor)
+    RIGHT_BACKWARD_PIN = 27   ->  L298N IN2   (right motor)
+    LEFT_FORWARD_PIN   = 24   ->  L298N IN3   (left motor)
+    LEFT_BACKWARD_PIN  = 23   ->  L298N IN4   (left motor)
     TURRET_LEFT_PIN    = 5   ->  L298N IN1   (turret, second L298N channel or board)
     TURRET_RIGHT_PIN   = 6   ->  L298N IN2   (turret)
 """
@@ -181,12 +181,20 @@ def wait_for_controller():
     """Block until at least one joystick is connected, then return it."""
     printed = False
     while True:
-        pygame.joystick.quit()   # re-init forces pygame to re-scan USB/BT devices
-        pygame.joystick.init()
+        # Process events so pygame sees JOYDEVICEADDED events
+        for event in pygame.event.get():
+            if event.type == pygame.JOYDEVICEADDED:
+                joystick = pygame.joystick.Joystick(event.device_index)
+                joystick.init()
+                return joystick
+
+        # Also check count directly in case the controller was already
+        # connected before we started waiting (e.g. on first startup)
         if pygame.joystick.get_count() > 0:
             joystick = pygame.joystick.Joystick(0)
             joystick.init()
             return joystick
+
         if not printed:
             print("Waiting for controller...")
             print("  PS3  -> plug in via USB")
@@ -215,7 +223,7 @@ def main():
             ctype = detect_type(name)
             if ctype is None:
                 print("Warning: could not auto-detect controller type -- defaulting to PS3 mapping.")
-                print("If controls feel wrong, run the appropriate *_test.py script to find your")
+                print("If controls feel wrong, run the appropriate diagnosis tool to find your")
                 print("button/axis numbers and update MAPPINGS at the top of tank.py.")
                 ctype = "ps3"
             else:
@@ -225,15 +233,19 @@ def main():
             print("Running. Ctrl+C to stop.\n")
 
             # --- drive loop: runs until controller disconnects or Ctrl+C ---
+            disconnected = False
             try:
-                while True:
-                    pygame.event.pump()
+                while not disconnected:
+                    for event in pygame.event.get():
+                        if event.type == pygame.JOYDEVICEREMOVED:
+                            if event.instance_id == joystick.get_instance_id():
+                                print("Controller disconnected -- motors stopped, waiting for reconnect...")
+                                stop_all()
+                                disconnected = True
+                                break
 
-                    # detect disconnect: pygame reports 0 joysticks when one is lost
-                    if pygame.joystick.get_count() == 0:
-                        print("Controller disconnected -- motors stopped, waiting for reconnect...")
-                        stop_all()
-                        break  # back to wait_for_controller()
+                    if disconnected:
+                        break
 
                     # --- drive motors ---
                     threshold  = mapping["trig_threshold"]
@@ -255,7 +267,6 @@ def main():
                 # pygame throws this if the joystick disappears mid-read
                 print("Controller lost -- motors stopped, waiting for reconnect...")
                 stop_all()
-                # loop continues back to wait_for_controller()
 
     except KeyboardInterrupt:
         print("\nStopping...")
