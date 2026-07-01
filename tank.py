@@ -37,12 +37,12 @@ from gpiozero import OutputDevice
 # ---------------------------------------------------------------------------
 # GPIO PIN CONFIG -- edit here if your wiring differs
 # ---------------------------------------------------------------------------
-RIGHT_FORWARD_PIN  = 17
-RIGHT_BACKWARD_PIN = 27
-LEFT_FORWARD_PIN   = 22
-LEFT_BACKWARD_PIN  = 23
-TURRET_LEFT_PIN    = 24
-TURRET_RIGHT_PIN   = 25
+RIGHT_FORWARD_PIN = 23
+RIGHT_BACKWARD_PIN = 24
+LEFT_FORWARD_PIN = 27
+LEFT_BACKWARD_PIN = 17
+TURRET_LEFT_PIN = 5
+TURRET_RIGHT_PIN = 6
 
 # Triggers rest at -1.0 (released) and go up to 1.0 (fully pressed).
 # We treat anything above this threshold as "pressed".
