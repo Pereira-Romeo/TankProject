@@ -7,7 +7,6 @@ of a specific controller type, based on the names controllers typically
 report during discovery.
 
 USAGE:
-    python3 find_controller_mac.py --ps3
     python3 find_controller_mac.py --ps4
     python3 find_controller_mac.py --ps5
     python3 find_controller_mac.py --xbox
@@ -79,7 +78,7 @@ def main():
 
     if controller_type == "ps3":
         print("PS3 controllers in this project connect via USB, not Bluetooth.")
-        print("Just plug it in directly -- there is no MAC address to find.")
+        print("Just plug it in directly.")
         return
 
     print(f"Looking for a {controller_type.upper()} controller over Bluetooth...")

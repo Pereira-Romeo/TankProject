@@ -22,6 +22,9 @@ The tank can be controlled by the following controllers:
 - **ps5**  (bluetooth)
 - **Xbox** (bluetooth)
 
+> [!NOTE]
+> For any bluetooth controller, **[please see the bluetooth pairing tool](./bluetooth_pairing_tool.md)**
+
 <ins>Tank movement: </ins> \
 R2 / RT  = right track forward \
 R1 / RB  = right track backward \
