@@ -86,10 +86,10 @@ MAPPINGS = {
         "dpad_hat":          0,
     },
     "xbox": {
-        "trig_right":        5,   # RT axis
-        "trig_left":         2,   # LT axis
-        "btn_right_back":    5,   # RB
-        "btn_left_back":     4,   # LB
+        "trig_right":        4,   # RT axis
+        "trig_left":         5,   # LT axis
+        "btn_right_back":    7,   # RB
+        "btn_left_back":     6,   # LB
         "dpad_type":         "hat",
         "dpad_hat":          0,
     },
