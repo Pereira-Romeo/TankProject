@@ -37,10 +37,10 @@ from gpiozero import OutputDevice
 # ---------------------------------------------------------------------------
 # GPIO PIN CONFIG -- edit here if your wiring differs
 # ---------------------------------------------------------------------------
-RIGHT_FORWARD_PIN  = 23
-RIGHT_BACKWARD_PIN = 24
-LEFT_FORWARD_PIN   = 27
-LEFT_BACKWARD_PIN  = 17
+RIGHT_FORWARD_PIN  = 17
+RIGHT_BACKWARD_PIN = 27
+LEFT_FORWARD_PIN   = 24
+LEFT_BACKWARD_PIN  = 23
 TURRET_LEFT_PIN    = 5
 TURRET_RIGHT_PIN   = 6
 
